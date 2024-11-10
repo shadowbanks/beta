@@ -17,6 +17,14 @@ export const config = {
   videoCollectionId: "67268c82002889563c27",
   storageId: "67268e34000c9040292c",
 };
+const 
+{endpoint,
+platform,
+projectId,
+databaseId,
+userCollectionId,
+videoCollectionId,
+storageId,} = config;
 
 // Init your React Native SDK
 const client = new Client();
@@ -115,3 +123,30 @@ export const getCurrentUser = async (): Promise<Models.Document | null> => {
     return null;
   }
 };
+
+export const getAllPosts = async () => {
+  try {
+    const posts = await databases.listDocuments(
+      databaseId,
+      videoCollectionId,
+    )
+    return posts.documents;
+  } catch (error) {
+    throw new Error(String(error));
+  }
+}
+
+export const getLatestPosts = async () => {
+  try {
+    const posts = await databases.listDocuments(
+      databaseId,
+      videoCollectionId,
+      [Query.orderDesc('$createdAt'), Query.limit(7)]
+    )
+    return posts.documents;
+  } catch (error) {
+    throw new Error(String(error));
+  }
+}
+
+export { Models };

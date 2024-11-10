@@ -1,19 +1,59 @@
-import { View, Text, FlatList, Image } from "react-native";
-import React from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  RefreshControl,
+  Alert,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "@/constants";
 import Search from "../search/[query]";
 import SearchInput from "@/components/SearchInput";
 import Trending from "@/components/Trending";
+import EmptyState from "@/components/EmptyState";
+import { getAllPosts, getLatestPosts, Models } from "@/lib/appwrite";
+import useAppwrite from "@/lib/useAppwrite";
+import VideoCard from "@/components/VideoCard";
+import VideoPlayer from "@/components/AudioPlayer";
+import AudioPlayer from "@/components/AudioPlayer";
 
 const Home = () => {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const { data: posts, refetch } = useAppwrite(getAllPosts);
+
+  const { data: latestPost } = useAppwrite(getLatestPosts);
+  
+  // console.log(posts);
+
+  const samplePost: { id: number }[] | [] = [
+    { id: 1 },
+    { id: 2 },
+    { id: 3 },
+    { id: 4 },
+    { id: 5 },
+    { id: 6 },
+    { id: 7 },
+    { id: 8 },
+    { id: 9 },
+    { id: 10 },
+  ];
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    // re call videos -> if any new video appears
+    await refetch();
+    setRefreshing(false);
+  };
   return (
-    <SafeAreaView className="bg-primary">
+    <SafeAreaView className="bg-primary h-full">
       <FlatList
-        data={[{ id: 1 }, { id: 2 }, { id: 3 }]}
+        data={posts}
         keyExtractor={(item) => item.$id}
         renderItem={({ item }) => (
-          <Text className="text-3xl text-white" key={item.id}>{item.id}</Text>
+          <VideoCard video={item} />
         )}
         ListHeaderComponent={() => (
           <View className="my-6 px-4 space-y-6">
@@ -47,10 +87,19 @@ const Home = () => {
                 Latest Videos
               </Text>
 
-              <Trending posts={[{ id: 1 }, { id: 2 }, { id: 3 }] ?? []} />
+              <Trending posts={latestPost ?? []} />
             </View>
           </View>
         )}
+        ListEmptyComponent={() => (
+          <EmptyState
+            title="No Videos Found"
+            subtitle="Be the first one to upload a video"
+          />
+        )}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
     </SafeAreaView>
   );
