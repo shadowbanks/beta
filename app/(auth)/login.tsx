@@ -33,7 +33,6 @@ const Login = () => {
 
     try {
       await signIn(form.email, form.password);
-      // Check for an existing login session
       const result = await getCurrentUser();
       setUser(result);
       setIsLoggedIn(true);

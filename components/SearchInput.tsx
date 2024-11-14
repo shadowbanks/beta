@@ -1,30 +1,21 @@
-import { View, Text, TextInput, Image } from "react-native";
+import { View, TextInput, Image, Alert } from "react-native";
 import React, { useState } from "react";
 import {
   GestureHandlerRootView,
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import { icons } from "@/constants";
+import { router, usePathname } from "expo-router";
 
-type SearchInputProps = {
-  title: string;
-  value: string;
-  placeholder: string;
-  handleChangeText: (e: string) => void;
-  otherStyles: string;
-  keyboardType?: "email-address";
-};
+interface SearchInputProps {
+  initialQuery?: string;
+}
 
-const SearchInput = ({
-  title,
-  value,
-  placeholder,
-  handleChangeText,
-  otherStyles,
-  ...props
-}: SearchInputProps) => {
-  const [showPassword, setShowPassword] = useState(false);
+const SearchInput = ({ initialQuery }: SearchInputProps) => {
   const [isFocused, setIsFocused] = useState(false);
+
+  const pathname = usePathname();
+  const [query, setQuery] = useState(initialQuery || "");
   return (
     <GestureHandlerRootView>
       <View
@@ -34,15 +25,25 @@ const SearchInput = ({
       >
         <TextInput
           className="text-base mt-0.5 text-white flex-1 font-pregular"
-          value={value}
+          value={query}
           placeholder="Search for a video topic"
-          placeholderTextColor="#7B7B8B"
-          onChangeText={handleChangeText}
+          placeholderTextColor="#CDCDE0"
+          onChangeText={(e) => setQuery(e)}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          secureTextEntry={title === "Password" && !showPassword}
         />
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            if (!query)
+              Alert.alert(
+                "Missing query",
+                "Please input something to search resukts across database"
+              );
+
+            if (pathname.startsWith("/search")) router.setParams({ query });
+            else router.push(`/search/${query}`);
+          }}
+        >
           <Image
             source={icons.search}
             className="w-5 h-5"

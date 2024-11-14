@@ -58,14 +58,14 @@ const VideoCard = ({
       </View>
       {play ? (
         <Video
-          // source={{ uri: video }}
+          source={{ uri: video }}
           style={{
             width: "100%", // equivalent to w-60
             height: 240, // equivalent to h-80
             marginTop: 12, // equivalent to mt-3
           }}
           // className="w-full h-60 rounded-xl mt-3"
-          source={{ uri: "https://www.w3schools.com/html/movie.mp4" }}
+          // source={{ uri: "https://www.w3schools.com/html/movie.mp4" }}
           resizeMode={ResizeMode.CONTAIN}
           useNativeControls
           shouldPlay
