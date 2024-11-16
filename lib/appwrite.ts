@@ -166,6 +166,7 @@ export const getUserPosts = async (userId: string) => {
   try {
     const posts = await databases.listDocuments(databaseId, videoCollectionId, [
       Query.equal("creator", userId),
+      Query.orderDesc("$createdAt"),
     ]);
     return posts.documents;
   } catch (error) {
